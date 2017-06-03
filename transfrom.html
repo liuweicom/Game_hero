@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#box{
+				width: :200px;
+				height: 5px;
+				background: black;
+				margin-left:300px ;
+				margin-top: 500px;
+				transform: rotate(0deg);
+				/*旋转默认为顺时针，逆时针为负*/
+				transform-origin: 0 2px;
+				/*旋转点的设置，这个如果高度特别大的话，这个会特别明显的区别*/
+				}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			
+		</div>
+		<script type="text/javascript">
+			var box=document.getElementById('box');
+			box.onclick=function(){
+				box.style.transform='rotate(-90deg)';
+			}
+		</script>
+	</body>
+</html>

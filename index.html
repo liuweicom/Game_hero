@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+				font-family: "微软雅黑";
+			}
+			#wrap {
+				width: 300px;
+				height: 500px;
+				margin: 70px auto;
+				border: 1px solid #000;
+				overflow: hidden;
+			}
+			
+			#gameContent{
+			width: 600px;
+			height: 500px;
+			background: url(img/bg/6.jpg);
+			position: relative;
+			left: 0px;
+		}
+			
+			#Leftdiv {
+				width: 80px;
+				height: 180px;
+				background: url(img/bg/7.jpg) no-repeat;
+				position: absolute;
+				left: : 0;
+				bottom: 0;
+			}
+			
+			#man {
+				width: 40px;
+				height: 45px;
+				position: absolute;
+				background: url(img/man/boy1.png) no-repeat;
+				bottom: 180px;
+				left: 0;
+			}
+			
+			#middiv {
+				width: 80px;
+				height: 180px;
+				background: url(img/bg/7.jpg) no-repeat;
+				position: absolute;
+				bottom: 0;
+				left: 200px;
+			}
+			
+			#stick {
+				width: 0px;
+				height: 6px;
+				background: black;
+				position: absolute;
+				left: 40px;
+				bottom: 180px;
+				transform: rotate(-90deg);
+				transform-origin: 0 6px;
+				/*要用tansition的值必须要对transition的对象有初始值*/
+			}
+			
+			#rightdiv {
+				width: 100px;
+				height: 180px;
+				position: absolute;
+				background: url(img/bg/7.jpg) no-repeat;
+				left: 400px;
+				bottom: 0;
+			}
+			
+			#result {
+				width: 80px;
+				height: 50px;
+				background: grey;
+				position: relative;
+				left: 110px;
+				top: 20px;
+				filter: alpha(opacity=70);
+				opacity: 0.7;
+				color: white;
+				
+			}
+			
+			#result h1 {
+				margin: 0;
+				width: 80px;
+				height: 50px;
+				text-align: center;
+			}
+			#end{
+				width: 220px;
+				height: 120px;
+				background: black;
+				filter: alpha(opacity=80);
+				opacity: 0.8;
+				position: absolute;
+				left: 40px;
+				top: 20px;
+				color: white;
+				text-align: center;
+				line-height: 30px;
+				display: none;
+				}
+			.suc {
+				animation: mymove 1s 1 linear;
+				-moz-animation: mymove 1s 1 linear;
+				/*Firefox */
+				-webkit-animation: mymove 1s 1 linear;
+				/*Safari and Chrome*/
+				/*-o-animation:mymove 5s 1 linear; */
+				/* Opera*/
+			}
+			
+			.ful {
+				animation: mymove1 1s 1 linear;
+				-moz-animation: mymove1 1s 1 linear;
+				/*Firefox */
+				-webkit-animation: mymove1 1s 1 linear;
+				/*Safari and Chrome*/
+				/*-o-animation:mymove 5s 1 linear;*/
+				/* Opera*/
+			}
+		</style>
+		<style id="manremove"></style>
+	</head>
+
+	<body>
+		<div id="wrap">
+
+			<div id="gameContent">
+				<div id="Leftdiv"></div>
+				<div id="middiv"></div>
+				<div id="rightdiv"></div>
+				<div id="man" class="people"></div>
+				<div id="stick"></div>
+				<div id="result"></div>
+				<div id="end">
+					<!--游戏结束！<br>
+					44分<br/>
+					再试一次！<br>
+					<span>确定</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>取消</span>-->
+				</div>
+			</div>
+		</div>
+		<script>
+			var timer = null;
+			var num = 0;
+			var onoff = false;
+			var step = 0;
+			var next;
+			var isplaying = false;
+			var score = 0;
+			var stick = document.getElementById('stick');
+			var leftdiv = document.getElementById('Leftdiv');
+			var middiv = document.getElementById('middiv');
+			var rightdiv = document.getElementById('rightdiv');
+			var man = document.getElementById('man');
+			var gameContent = document.getElementById('gameContent');
+			var Style = document.getElementById('manremove');
+			var result = document.getElementById('result');
+			var end=document.getElementById('end');
+			var oSpan=end.getElementsByTagName('span');
+			///gameContent.backgroundImage="url(img/man/boy1.jpg)";
+			middiv.style.width = creatNum(40, 80) + "px";
+			middiv.style.left = creatNum(80, 220) + "px";
+			result.innerHTML = '<h1>' + score + '</h1>';
+			document.onmousedown = function() {
+				if(isplaying) {
+					return;
+				}
+				timer = setInterval(function() {
+					num += 2;
+					stick.style.width = num + 'px';
+				}, 20)
+			}
+			document.onmouseup = function() {
+				if(isplaying) {
+					return;
+				}
+				clearInterval(timer);
+				midLeft = middiv.offsetLeft;
+				isplaying = true;
+
+				next = creatNext();
+				//	alert(next[0]);
+				//	rightdiv.style.width="100px";
+				rightdiv.style.width = next[0] + 'px';
+				rightdiv.style.left = next[1] + 'px';
+				stick.style.transition = "0.5s";
+				stick.style.transform = "rotate(0deg)";
+				if(middiv.offsetLeft - 40 < num && num < middiv.offsetLeft + middiv.offsetWidth - 40) {
+					onoff = true;
+					score++;
+
+				} else {
+					onoff = false;
+				}
+			}
+			stick.addEventListener('transitionend', function() {
+
+				if(onoff) {
+					Style.innerHTML = '@-webkit-keyframes mymove{0%{left:0px;bottom: 180px;}\n' + '100%{left:' + middiv.offsetLeft + 'px;bottom: 180px;}}';
+					man.className = 'suc';
+					//man.style.transition = "1s";
+					//man.style.left = middiv.offsetLeft + 'px';
+
+				} else {
+					
+					Style.innerHTML = '@-webkit-keyframes mymove1{0%{left:0px;bottom:180px;}\n' + '80%{left:' + (num + 40) + 'px;bottom:180px;}\n' + '100%{left:' + (num + 40) + 'px;bottom:-1px;}}';
+					man.className = 'ful';
+					
+				}
+
+			});
+			man.addEventListener("animationend", function(ev) {
+				if(onoff) {
+					man.style.left=middiv.offsetLeft +'px';
+					gameContent.style.transition = "1s";
+					gameContent.style.left = -middiv.offsetLeft + 'px';
+					step = 1;
+					result.innerHTML = '<h1>' + score + '</h1>';
+					result.style.left = 110 + middiv.offsetLeft + 'px';
+					result.style.transition = '1s';
+					//这里会发生瞬间冒泡，ev阻止冒泡事件
+					ev.stopPropagation();
+				} else {
+					ev.stopPropagation();
+					//					man.style.transition = "1s";
+					//					man.style.bottom = 0 + 'px';
+					step = 0;
+					if(step == 0) {
+						man.style.left = num + 40 + 'px';
+						man.style.bottom = 0;
+						end.style.display='block';
+						end.innerHTML='游戏结束！<br>'+score+'分<br/>再试一次！<br><span>确定</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>取消</span>';
+						
+						oSpan[0].onclick=function(){
+							end.style.display='none';
+							score = 0;
+							middiv.style.width = creatNum(40, 80) + "px";
+							middiv.style.left = creatNum(80, 220) + "px";
+							gameContent.style.transition = "none;"
+							gameContent.style.left = 0;
+							//man.style.transition = "none";
+							man.style.left = 0;
+							man.style.bottom = '180px';
+							man.className = '';
+							Style.innerHTML = '';
+							result.innerHTML = '<h1>' + score + '</h1>';
+							end.innerHTML='';
+							stick.style.transition = "none";
+							stick.style.width = 0;
+							stick.style.transform = "rotate(-90deg)";
+							step = 0;
+							isplaying = false;
+							num = 0;
+
+						}
+						oSpan[1].onclick=function(){
+							end.style.display='none';
+							end.innerHTML='';
+							man.className = '';
+							Style.innerHTML = '';
+							result.innerHTML = '<h1>结束</h1>';
+						}
+						
+					}
+
+				}
+
+			});
+			gameContent.addEventListener("transitionend", function() {
+				if(step == 1) {
+					//				alert(1);s
+					gameContent.style.transition= "none";
+					gameContent.style.left = 0;
+					Style.innerHTML = '';
+					man.className = '';
+					man.style.left = 0;
+					//man.style.transition = "none";
+					end.style.display='none';
+					end.innerHTML='';
+					result.innerHTML = '<h1>' + score + '</h1>';
+					result.style.transition = 'none';
+					result.style.left = 110 + 'px';
+					stick.style.transition = "none";
+					stick.style.width = 0;
+					stick.style.transform = "rotate(-90deg)";
+					leftdiv.style.width = middiv.offsetWidth + 'px';
+					//offsetWidth与style。width的区别
+					middiv.style.width = next[0] + 'px';
+					middiv.style.left = next[1] - midLeft + 'px';
+					
+
+					isplaying = false;
+					num = 0;
+					step = 0;
+				}
+
+			});
+
+			function creatNum(start, end) {
+				return parseInt(Math.random() * (end - start) + start);
+			}
+
+			function creatNext() {
+
+				var iWidth = creatNum(40, 80);
+				var iLeft = creatNum(300, 220 + midLeft)
+				return [iWidth, iLeft];
+			}
+		</script>
+
+	</body>
+
+</html>
